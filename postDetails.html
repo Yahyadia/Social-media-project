@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>postDetails</title>
+    <!-- IMPORT BOOTSTRAP -->
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <!-- IMPORT AXIOS -->
+    <script src="node_modules/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        body{
+            background-color: #f0ecff;
+        }
+        #add-post-btn{
+            position: fixed;
+            right: 5%;
+            bottom: 5%;
+            width: 50px;
+            height: 50px;
+            /* font-size: 50px; */
+            /* line-height: 0.1; */
+            color: white;
+            
+        }
+    </style>
+</head>
+<body>
+    <!-- =========================================================================MODALS========================================================================== -->
+    <!-- =======================//LOGIN MODAL//======================= -->
+    <div class="modal fade" id="login-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Login In</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label  for="recipient-name" class="col-form-label">Username:</label>
+                            <input  type="text" class="form-control" id="usernameInput" value="yahya">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Passswords:</label>
+                            <input type="password" class="form-control" id="passwordInput" value="Ym123456">                            
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary"  onclick="loginBtnClicked()">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- =======================//LOGIN MODAL//======================= -->
+    <!-- =======================//REGISTER MODAL//======================= -->
+    <div class="modal fade" id="register-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Registeratoin</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="register-name-input" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="register-name-input">                        
+                    </div>
+                    <div class="mb-3">
+                        <label for="register-username-input" class="col-form-label">Username:</label>
+                        <input type="text" class="form-control" id="register-username-input">
+                    </div>
+                    <div class="mb-3">
+                        <label for="register-password-input" class="col-form-label">Password:</label>
+                        <input type="password" class="form-control" id="register-password-input">                        
+                    </div>
+                    <div class="mb-3">
+                        <label for="register-image-input" class="col-form-label">Image</label>
+                        <input type="file" class="form-control" id="register-image-input">                        
+                    </div>
+                </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="registerBtnClicked()">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- =======================//REGISTER MODAL//======================= -->
+    <!-- =========================================================================MODALS========================================================================== -->
+
+    <!-- ===============================ALERTS=============================== -->
+    <div id="success-alert" class="fade show" style="position: fixed; z-index: 10; right: 0; bottom: 0; width: 400px;"></div>
+    <!-- ===============================ALERTS=============================== -->
+
+
+    <!-- ===============================================================NAVIGATION BAR CONTAINER================================================================== -->
+    <div class="container">
+        <div class="d-flex justify-content-center">
+            <div class="col-10">
+                <nav class="navbar navbar-expand-lg bg-body-tertiary shadow rounded-bottom pt-3">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="home.html">YAHYA</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="home.html">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" onclick="profileClicked()">Profile</a>
+                                </li>
+                            </ul>
+                            <!-- //////// NON-LOGIN //////// -->
+                            <div class="d-flex" id="login-div">
+                                <button type="button" class="btn btn-outline-success mx-2" data-bs-toggle="modal" data-bs-target="#login-modal" data-bs-whatever="@mdo">Login</button>
+                                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#register-modal" data-bs-whatever="@mdo">register</button>
+                            </div>
+                            <!-- //////// NON-LOGIN //////// -->
+                            <!-- //////// LOGOUT //////// -->
+                            <div id="logout-div" class="d-flex align-items-center">
+                                <img id="user-image" class="rounded-circle" src="images/download.jpg" alt="" style="height:40px; width: 40px;">
+                                <b id="user-account" class="mx-1 me-3">YAHYA</b>
+                                <button type="button" class="btn btn-outline-danger me-4" data-bs-toggle="modal" data-bs-whatever="@mdo" onclick="logOutBtnClicked()">Logout</button>                                
+                            </div>                            
+                            <!-- //////// LOGOUT //////// -->
+                        </div>
+                    </div>
+                </nav>            
+            </div>
+        </div>
+        
+    </div>
+    <!-- ==================================================================NAVIGATION BAR CONTAINER================================================================== -->
+
+    <!-- ==================================================================MAIN CONTENT CONTAINER================================================================== -->
+    <div class="container"> 
+        <!-- USERS' POSTS NAME--> 
+        <div class="d-flex justify-content-center mt-5">
+            <div class="col-9">
+                <h1>
+                    <span id="username-span">
+                        YAHYA's 
+                    </span>'s
+                    Post
+                </h1>
+            </div>
+        </div>
+        <!-- USERS' POSTS NAME--> 
+        <!-- SHOW POST -->
+        <div class="d-flex justify-content-center mt-1 mb-5">
+            <div id="post" class="col-9">
+                <div class="card shadow-lg mb-2">
+                    <div class="card-header">
+                        <img class="rounded-circle border border-1" src="images/user.png" alt="" style="width: 40px;">
+                        <b>@YAHYA</b>
+                    </div>
+                    <div class="card-body">
+                        <img class="w-100" src="./images/download.jpg" alt="">
+                        <h6 style="color: hsl(0, 0%, 40%);">2 min ago</h6>
+                        <h4 class="">Special title treatment</h4>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae eligendi recusandae aspernatur delectus hic.</p>
+                        <hr>
+                        <div id="tags">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                                <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
+                            </svg>
+                            <span>(12) Comments</span>
+                            <span>                                    
+                                <!-- <span class="bg-secondary p-2 rounded-4 text-white">policy</span> -->
+                            </span>
+                        </div>
+                        <hr>
+                        <div id="comments" class="bg-info-subtle p-1">
+                            <!-- COMMENTS HEADER -->
+                            <div>
+                                <img class="rounded-circle border border-1" alt="" width="30" height="30">
+                                <b>Hello.yes</b>
+                            </div>
+                            <!-- COMMENTS BODY -->
+                            <div>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam adipisci eveniet quasi molestias, consequuntur voluptas?</p>
+                            </div>
+                        </div>
+                        <div id="comment-div" class="input-group mb-3">
+                            <input id="create-comment" type="text" class="form-control" placeholder="Comment" aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <button class="btn btn-outline-primary" type="button" id="button-addon2" onclick="addComment()">Button</button>                    
+                        </div>
+                    </div>
+                </div>       
+            </div>
+        </div>
+        <!-- POST -->
+        <!-- USERS' POSTS -->
+    </div>
+</body>
+<script src="mainLogic.js"></script>
+<script>
+
+    setupUI()
+    
+    
+    console.log(window.location.search)
+    const urlParams = new URLSearchParams(window.location.search)
+    const id = urlParams.get("Id")    
+    
+    console.log(id)
+    
+    showAllPosts ()
+    
+    
+    function showAllPosts (){
+        axios.get(`${baseUrl}/posts/${id}`)
+        .then(function (response) {         
+            
+            const post = response.data.data
+            
+            const comments = post.comments
+            const author = post.author.name
+            const userName = post.author.username                
+            const postTags = post.tags
+            
+            console.log(post);
+            
+            document.getElementById("username-span").innerHTML = author
+            // document.getElementById("user-name").innerHTML = userName
+            // document.getElementById("post-image").src = postImage
+            // document.getElementById("post-time").innerHTML = postTime
+            // document.getElementById("post-title").innerHTML = postTitle
+            // document.getElementById("post-body").innerHTML = postBody
+            // document.getElementById("comments-count").innerHTML = postCommentsCount
+            // document.getElementById("comments").innerHTML = ""
+            
+            // طريقتين لاستخدام اللوب واضافتهم الى الصفحة فوق وتحت
+            let postComments = ""
+            for(comment of comments){
+                postComments += `
+                    <div class="bg-body-secondary">
+                        <div>
+                            <img class="rounded-circle border border-1" alt="" src="${comment.author.profile_image}" width="30" height="30">
+                            <b>${comment.author.name}</b>
+                            </div>
+                        <div>
+                            <p class="mb-0">${comment.body}</p>                            
+                            </div>
+                    </div>
+                `
+                // document.getElementById("comments").innerHTML += content
+            }
+
+            const token = localStorage.getItem("token")
+            let showCommentDiv = ""
+            if(token != null){
+                showCommentDiv = `
+                <div id="comment-div" class="input-group mb-3">
+                    <input id="create-comment" type="text" class="form-control" placeholder="Comment" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-primary" type="button" id="button-addon2" onclick="addCommentClicked()">Button</button>                    
+                </div>
+                `
+
+            }
+            
+            let postContent = `
+                <div class="card shadow-lg mb-2">
+                    <div class="card-header">
+                        <img class="rounded-circle border border-1" src="${post.author.profile_image}" alt="" style="width: 40px; height: 40px;">
+                        <b id="user-name">@${post.author.username}</b>
+                    </div>
+                    <div class="card-body">
+                        <img class="w-100" src="${post.image}" alt="" id="post-image">
+                        <h6 id="post-time" style="color: hsl(0, 0%, 40%);">${post.created_at}</h6>
+                        <h4 id="post-title" class="">${post.title}</h4>
+                        <p id="post-body">${post.body}</p>
+                        <hr>
+                        <div id="tags" class"">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
+                            </svg>
+                            <span>(${post.comments_count}) Comments</span>
+                            <span id="tag-posts">                                    
+                            </span>
+                        </div>
+                        <hr>
+                        <div id="comments">         
+                            ${postComments}                    
+                        </div>       
+                        ${showCommentDiv}
+                    </div>
+                </div>           
+            `
+
+            document.getElementById("post").innerHTML = postContent
+            
+            for(tag of postTags){
+                let content = `
+                <span class="bg-secondary p-2 rounded-5 text-white">${tag.name}</span>`
+                
+                document.getElementById("tag-posts").innerHTML += content
+            }
+            
+            
+        })
+        // setupUI()
+    }    
+    
+    // =========================================================================== ADD COMMENT
+    
+    function addCommentClicked() {
+        const createComment = document.getElementById("create-comment").value
+        const token = localStorage.getItem("token")
+        
+        const url = `${baseUrl}/posts/${id}/comments`
+        
+        const bodyparams = 
+        {
+            "body": createComment
+        }
+        const config = 
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+        
+        axios.post(url, bodyparams , config)
+        .then(response => {
+            console.log(response)
+            showPost ()
+            showAlert("The comment has created succesfully", "success")
+        })
+        .catch(error => {
+            console.log(error)
+            const errorMessage = error.response.data.message
+            console.log(errorMessage)
+            showAlert(errorMessage, "danger")
+        })
+        
+        setupUI()
+    }
+</script>
+</html>
